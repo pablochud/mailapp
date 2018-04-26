@@ -47,6 +47,8 @@ class MailMessageHeader(Base):
     msg_id_folder = Column(Integer, nullable=True)
     content_type = Column(String(200),nullable=True)
     
+    attachments = relationship('MailMessageSentAttach', backref='attachments')
+
     def __init__(self,system,msg_sent_subject,msg_sent_date):
         self.system = system
         self.msg_sent_date = msg_sent_date
@@ -85,7 +87,7 @@ class MailMessageSentAttach(Base):
     content_type = Column(String(200),nullable=True)
     body_blob = Column(LargeBinary(), nullable=True)
 
-    message_header = relationship('MailMessageHeader', backref='MailMessageSentAttach')
+    #message_header = relationship('MailMessageHeader', backref='MailMessageSentAttach')
 
     @classmethod
     def get_message_attachment(cls, id):
@@ -213,8 +215,9 @@ def handler(conf):
     global engine
     engine = create_engine(config['engine'], echo=False)
 
-    attach = MailMessageSentAttach.get_message_attachment('116.mga_test2017@outlook.com')
-    msg = attach.message_header
+    msg = MailMessageHeader.get_message_header('116.mga_test2017@outlook.com')
+    atach = msg.attachments
+
     if msg.system == 'SMTP':
         con_server = do_connect_to_smpt()
         if con_server:
