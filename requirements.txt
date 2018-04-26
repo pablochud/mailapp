@@ -1,0 +1,4 @@
+cx_Oracle
+SQLAlchemy
+click
+
